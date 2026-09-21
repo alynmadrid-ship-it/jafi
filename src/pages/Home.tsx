@@ -33,37 +33,43 @@ type HomeProps = {
   totalActivitati: number;
   zileActive: number;
   darkMode: boolean;
-  nivelRealizare: {
-  nume: string;
-  culoare: string;
-  ultimele28Zile: {
-  data: string;
-  minute: number;
-  dateGraficSaptamanal: {
-  zi: string;
-  minute: number;
-  zileCalendar: (number | null)[];
-anulCurent: number;
-lunaCurenta: number;
-minutePeZiCalendar: Record<string, number>;
-textCautare: string;
-filtruPerioada: string;
-activitatiFiltrate: Activitate[];
-dateSortate: string[];
-activitatiGrupate: Record<string, Activitate[]>;
-setTextCautare: (text: string) => void;
-setFiltruPerioada: (perioada: string) => void;
-exportaPDF: () => void;
-editeazaActivitate: (id: number) => void;
-stergeActivitate: (id: number) => void;
-}[];
-}[];
-};
-urmatorulNivel: number | null;
-progresNivel: number;
-minuteRamaseNivel: number;
-};
 
+  nivelRealizare: {
+    nume: string;
+    culoare: string;
+  };
+
+  urmatorulNivel: number | null;
+  progresNivel: number;
+  minuteRamaseNivel: number;
+
+  ultimele28Zile: {
+    data: string;
+    minute: number;
+  }[];
+
+  dateGraficSaptamanal: {
+    zi: string;
+    minute: number;
+  }[];
+
+  zileCalendar: (number | null)[];
+  anulCurent: number;
+  lunaCurenta: number;
+  minutePeZiCalendar: Record<string, number>;
+
+  textCautare: string;
+  filtruPerioada: string;
+  activitatiFiltrate: Activitate[];
+  dateSortate: string[];
+  activitatiGrupate: Record<string, Activitate[]>;
+
+  setTextCautare: (text: string) => void;
+  setFiltruPerioada: (perioada: string) => void;
+  exportaPDF: () => void;
+  editeazaActivitate: (id: number) => void;
+  stergeActivitate: (id: number) => void;
+};
 export default function Home({
   numeUtilizator,
   clasaUtilizator,

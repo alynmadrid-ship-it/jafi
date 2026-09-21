@@ -1,22 +1,8 @@
 import { useState, useEffect } from "react";
-import { Trash2, Pencil } from "lucide-react";
 import Header from "./components/Header";
 import Card from "./components/Card";
 import Statistics from "./pages/Statistics";
 import ActivityForm from "./components/ActivityForm";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-Pie,
-Cell,
-Legend,
-} from "recharts";
 type Activitate = {
   id: number;
   nume: string;
@@ -464,16 +450,6 @@ const activitatePreferata =
   nume,
   minute,
 }));
-const COLORS = [
-  "#2563eb",
-  "#16a34a",
-  "#f59e0b",
-  "#ef4444",
-  "#8b5cf6",
-  "#06b6d4",
-  "#ec4899",
-  "#84cc16",
-];
       const activitatiPerioada = activitati.filter((activitate) => {
   if (filtruPerioada === "toate") {
     return true;
