@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Trash2, Pencil } from "lucide-react";
 import Header from "./components/Header";
 import Card from "./components/Card";
+import Statistics from "./pages/Statistics";
 import ActivityForm from "./components/ActivityForm";
 import {
   BarChart,
@@ -781,114 +782,18 @@ stergeActivitate={stergeActivitate}
   </div>
 </Card>
 )}
-  {sectiuneActiva === "statistici" && (
-    <>
-  <Card titlu="Statistici" darkMode={darkMode}>
-  <div
-    style={{
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-      gap: "16px",
-    }}
-  >
-    {[
-      {
-  titlu: "Obiectiv",
-  valoare: `${Math.round((totalMinute / 420) * 100)}%`,
-},
-      {
-        titlu: "Activități",
-        valoare: totalActivitati,
-      },
-      {
-        titlu: "Minute totale",
-        valoare: totalMinute,
-      },
-      {
-        titlu: "Medie / activitate",
-        valoare: `${mediaMinutePeActivitate} min`,
-      },
-      {
-        titlu: "Zile active",
-        valoare: numarZileActive,
-      },
-      {
-        titlu: "Activitatea preferată",
-        valoare: activitatePreferata,
-      },
-    ].map((statistica) => (
-      <div
-        key={statistica.titlu}
-       style={{
-  background: darkMode ? "#0f172a" : "#f8fafc",
-  border: darkMode
-    ? "1px solid #475569"
-    : "1px solid #e2e8f0",
-  borderRadius: "12px",
-  padding: "20px",
-  textAlign: "center",
-  transition:
-    "background 0.3s ease, border 0.3s ease",
-}} 
-      >
-        <div
-          style={{
-  fontSize: "14px",
-  color: darkMode ? "#cbd5e1" : "#64748b",
-  marginBottom: "8px",
-  transition: "color 0.3s ease",
-}}
-        >
-          {statistica.titlu}
-        </div>
-
-        <div
-          style={{
-  fontSize: "26px",
-  fontWeight: "bold",
-  color: darkMode ? "#93c5fd" : "#1e3a8a",
-  transition: "color 0.3s ease",
-}}
-        >
-          {statistica.valoare}
-        </div>
-      </div>
-        ))}
-  </div>
-</Card>
-  
-
-<Card titlu="Distribuția activităților" darkMode={darkMode}>
-  <ResponsiveContainer width="100%" height={320}>
-    <PieChart>
-      <Pie
-  data={dateActivitatiPreferate}
-  dataKey="minute"
-  nameKey="nume"
-  cx="50%"
-  cy="50%"
-  outerRadius={120}
-  label
->
-  {dateActivitatiPreferate.map((_, index) => (
-    <Cell
-      key={`cell-${index}`}
-      fill={COLORS[index % COLORS.length]}
-    />
-  ))}
-</Pie>
-      <Tooltip />
-      <Legend
-  wrapperStyle={{
-    color: darkMode ? "#e2e8f0" : "#334155",
-    fontWeight: 500,
-  }}
-/>
-    </PieChart>
-  </ResponsiveContainer>
-  </Card>
-  </>
+{sectiuneActiva === "statistici" && (
+  <Statistics
+    darkMode={darkMode}
+    totalMinute={totalMinute}
+    totalActivitati={totalActivitati}
+    mediaMinutePeActivitate={mediaMinutePeActivitate}
+    numarZileActive={numarZileActive}
+    activitatePreferata={activitatePreferata}
+    dateActivitatiPreferate={dateActivitatiPreferate}
+  />
 )}
+  
 {sectiuneActiva === "setari" && (
   <Settings
     numeInitial={numeUtilizator}
