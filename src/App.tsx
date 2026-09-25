@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { supabase } from "./lib/supabase";
 import Header from "./components/Header";
 import Card from "./components/Card";
 import Statistics from "./pages/Statistics";
@@ -14,6 +15,7 @@ import autoTable from "jspdf-autotable";
 import Home from "./pages/Home";
 import Settings from "./pages/Settings";
 function App() {
+  
   const [darkMode, setDarkMode] = useState<boolean>(() => {
   return localStorage.getItem("darkMode") === "true";
 });
@@ -24,6 +26,10 @@ const [numeUtilizator, setNumeUtilizator] = useState(
 const [clasaUtilizator, setClasaUtilizator] = useState(
   () => localStorage.getItem("clasaUtilizator") || "Clasa a V-a"
 );
+const [elevId, setElevId] = useState<number | null>(() => {
+  const idSalvat = localStorage.getItem("elevId");
+  return idSalvat ? Number(idSalvat) : null;
+});
   const [sectiuneActiva, setSectiuneActiva] = useState<
   "acasa" | "activitate" | "statistici" | "realizari" | "setari"
 >("acasa");
@@ -45,6 +51,33 @@ useEffect(() => {
 useEffect(() => {
   localStorage.setItem("activitati", JSON.stringify(activitati));
 }, [activitati]);
+useEffect(() => {
+  if (elevId === null) {
+    return;
+  }
+
+  const incarcaActivitati = async () => {
+    const { data, error } = await supabase
+      .from("activitati")
+      .select("*")
+      .eq("elev_id", elevId)
+      .order("data", { ascending: false });
+
+    console.log("ACTIVITATI DIN SUPABASE:", data, error);
+ if (!error && data) {
+  const activitatiConvertite: Activitate[] = data.map((activitate) => ({
+    id: activitate.id,
+    nume: activitate.tip_activitate,
+    durata: activitate.durata,
+    data: activitate.data,
+  }));
+
+  setActivitati(activitatiConvertite);
+}
+  };
+
+  incarcaActivitati();
+}, [elevId]);
 const [textCautare, setTextCautare] = useState("");
 const [filtruPerioada, setFiltruPerioada] = useState("toate");
   const azi = new Date();
@@ -188,7 +221,7 @@ const activitatiGrupate = activitati.reduce<Record<string, Activitate[]>>(
 const dateSortate = Object.keys(activitatiGrupate).sort((a, b) =>
   b.localeCompare(a)
 );
- function adaugaActivitate(
+ async function adaugaActivitate(
   nume: string,
   durata: number,
   data: string
@@ -201,6 +234,18 @@ const dateSortate = Object.keys(activitatiGrupate).sort((a, b) =>
 };
     
     setActivitati((listaVeche) => [activitateNoua, ...listaVeche]);
+ if (elevId) {
+  const { error } = await supabase
+    .from("activitati")
+    .insert({
+      elev_id: elevId,
+      tip_activitate: nume,
+      durata: durata,
+      data: data,
+    });
+
+  console.log("SALVARE ACTIVITATE:", error);
+}
   }
  function stergeActivitate(id: number) {
   const confirmare = window.confirm(
@@ -774,13 +819,41 @@ stergeActivitate={stergeActivitate}
   <Settings
     numeInitial={numeUtilizator}
     clasaInitiala={clasaUtilizator}
-    onSalvare={(nume, clasa) => {
-      setNumeUtilizator(nume);
-      setClasaUtilizator(clasa);
+    onSalvare={async (nume, clasa) => {
+  setNumeUtilizator(nume);
+  setClasaUtilizator(clasa);
 
-      localStorage.setItem("numeUtilizator", nume);
-      localStorage.setItem("clasaUtilizator", clasa);
-    }}
+  localStorage.setItem("numeUtilizator", nume);
+  localStorage.setItem("clasaUtilizator", clasa);
+
+  if (elevId) {
+    const { error } = await supabase
+      .from("elevi")
+      .update({
+        nume: nume,
+        clasa: clasa,
+      })
+      .eq("id", elevId);
+
+    console.log("ACTUALIZARE ELEV:", error);
+  } else {
+    const { data, error } = await supabase
+      .from("elevi")
+      .insert({
+        nume: nume,
+        clasa: clasa,
+      })
+      .select("id")
+      .single();
+
+    if (data) {
+      setElevId(data.id);
+      localStorage.setItem("elevId", String(data.id));
+    }
+
+    console.log("CREARE ELEV:", data, error);
+  }
+}}
     darkMode={darkMode}
   />
   )}
