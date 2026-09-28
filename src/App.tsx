@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import Card from "./components/Card";
 import Statistics from "./pages/Statistics";
 import ActivityForm from "./components/ActivityForm";
+import Login from "./pages/Login";
 type Activitate = {
   id: number;
   nume: string;
@@ -29,6 +30,9 @@ const [clasaUtilizator, setClasaUtilizator] = useState(
 const [elevId, setElevId] = useState<number | null>(() => {
   const idSalvat = localStorage.getItem("elevId");
   return idSalvat ? Number(idSalvat) : null;
+});
+const [autentificat, setAutentificat] = useState(() => {
+  return localStorage.getItem("elevId") !== null;
 });
   const [sectiuneActiva, setSectiuneActiva] = useState<
   "acasa" | "activitate" | "statistici" | "realizari" | "setari"
@@ -247,7 +251,7 @@ const dateSortate = Object.keys(activitatiGrupate).sort((a, b) =>
   console.log("SALVARE ACTIVITATE:", error);
 }
   }
- function stergeActivitate(id: number) {
+ async function stergeActivitate(id: number) {
   const confirmare = window.confirm(
     "Sigur dorești să ștergi această activitate?"
   );
@@ -256,11 +260,22 @@ const dateSortate = Object.keys(activitatiGrupate).sort((a, b) =>
     return;
   }
 
+  const { error } = await supabase
+    .from("activitati")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error("EROARE ȘTERGERE ACTIVITATE:", error);
+    alert("Activitatea nu a putut fi ștearsă.");
+    return;
+  }
+
   setActivitati((listaVeche) =>
     listaVeche.filter((activitate) => activitate.id !== id)
   );
 }
-function editeazaActivitate(id: number) {
+async function editeazaActivitate(id: number) {
   const activitate = activitati.find((element) => element.id === id);
 
   if (!activitate) {
@@ -288,6 +303,20 @@ function editeazaActivitate(id: number) {
   const durataNoua = Number(durataNouaText);
 
   if (durataNoua <= 0 || Number.isNaN(durataNoua)) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("activitati")
+    .update({
+      tip_activitate: numeNou.trim(),
+      durata: durataNoua,
+    })
+    .eq("id", id);
+
+  if (error) {
+    console.error("EROARE EDITARE ACTIVITATE:", error);
+    alert("Activitatea nu a putut fi modificată.");
     return;
   }
 
@@ -520,6 +549,37 @@ const activitatePreferata =
     .toLowerCase()
     .includes(textCautare.toLowerCase())
 );
+if (!autentificat) {
+  return (
+    <Login
+      darkMode={darkMode}
+      onLogin={async (username, pin) => {
+        const { data, error } = await supabase
+          .from("elevi")
+          .select("id, nume, clasa")
+          .eq("user_name", username.trim())
+          .eq("pin", pin.trim())
+          .eq("activ", true)
+          .maybeSingle();
+
+        if (error || !data) {
+          alert("Numele de utilizator sau PIN-ul este incorect.");
+          return;
+        }
+
+        setElevId(data.id);
+        setNumeUtilizator(data.nume);
+        setClasaUtilizator(data.clasa);
+
+        localStorage.setItem("elevId", String(data.id));
+        localStorage.setItem("numeUtilizator", data.nume);
+        localStorage.setItem("clasaUtilizator", data.clasa);
+
+        setAutentificat(true);
+      }}
+    />
+  );
+}
   return (
     <div
   style={{
@@ -855,6 +915,19 @@ stergeActivitate={stergeActivitate}
   }
 }}
     darkMode={darkMode}
+    onDeconectare={() => {
+  localStorage.removeItem("elevId");
+  localStorage.removeItem("numeUtilizator");
+  localStorage.removeItem("clasaUtilizator");
+  localStorage.removeItem("activitati");
+
+  setElevId(null);
+  setNumeUtilizator("");
+  setClasaUtilizator("Clasa a V-a");
+  setActivitati([]);
+  setAutentificat(false);
+  setSectiuneActiva("acasa");
+}}
   />
   )}
   </div>

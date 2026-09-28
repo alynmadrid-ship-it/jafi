@@ -6,6 +6,7 @@ type SettingsProps = {
   clasaInitiala: string;
   onSalvare: (nume: string, clasa: string) => void;
   darkMode: boolean;
+  onDeconectare: () => void;
 };
 
 export default function Settings({
@@ -13,6 +14,7 @@ export default function Settings({
   clasaInitiala,
   onSalvare,
   darkMode,
+  onDeconectare,
 }: SettingsProps) {
   const [numeUtilizator, setNumeUtilizator] = useState(numeInitial);
   const [clasaUtilizator, setClasaUtilizator] = useState(clasaInitiala);
@@ -106,6 +108,20 @@ export default function Settings({
         >
           Salvează profilul
         </button>
+        <button
+  onClick={onDeconectare}
+  style={{
+    background: "#dc2626",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    padding: "12px",
+    fontWeight: "bold",
+    cursor: "pointer",
+  }}
+>
+  Deconectare
+</button>
 
         {mesajSalvare && (
           <p
