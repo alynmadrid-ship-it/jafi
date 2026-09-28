@@ -577,6 +577,47 @@ if (!autentificat) {
 
         setAutentificat(true);
       }}
+     onCreareCont={async (nume, clasa, username, pin) => {
+  const { data: utilizatorExistent } = await supabase
+    .from("elevi")
+    .select("id")
+    .eq("user_name", username)
+    .maybeSingle();
+
+  if (utilizatorExistent) {
+    alert("Acest nume de utilizator este deja folosit.");
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("elevi")
+    .insert({
+      nume: nume,
+      clasa: clasa,
+      user_name: username,
+      pin: pin,
+      activ: true,
+    })
+    .select("id, nume, clasa")
+    .single();
+
+  if (error || !data) {
+    console.error("EROARE CREARE CONT:", error);
+    alert("Contul nu a putut fi creat.");
+    return;
+  }
+
+  setElevId(data.id);
+  setNumeUtilizator(data.nume);
+  setClasaUtilizator(data.clasa);
+
+  localStorage.setItem("elevId", String(data.id));
+  localStorage.setItem("numeUtilizator", data.nume);
+  localStorage.setItem("clasaUtilizator", data.clasa);
+
+  setActivitati([]);
+  setAutentificat(true);
+}}
     />
   );
 }
