@@ -37,24 +37,10 @@ const [autentificat, setAutentificat] = useState(() => {
   const [sectiuneActiva, setSectiuneActiva] = useState<
   "acasa" | "activitate" | "statistici" | "realizari" | "setari"
 >("acasa");
- const [activitati , setActivitati] = useState<Activitate[]>(() => {
-  const salvate = localStorage.getItem("activitati");
-  if (!salvate) {
-    return [];
-  }
-
-  try {
-  return JSON.parse(salvate);
-} catch {
-  return [];
-}
-});
+ const [activitati, setActivitati] = useState<Activitate[]>([]);
 useEffect(() => {
   localStorage.setItem("darkMode", String(darkMode));
 }, [darkMode]);
-useEffect(() => {
-  localStorage.setItem("activitati", JSON.stringify(activitati));
-}, [activitati]);
 useEffect(() => {
   if (elevId === null) {
     return;
