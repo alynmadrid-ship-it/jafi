@@ -28,6 +28,10 @@ type StatisticsProps = {
   nume: string;
   minute: number;
 }[];
+dateIntensitate: {
+  nume: string;
+  minute: number;
+}[];
 };
 
 export default function Statistics({
@@ -38,6 +42,7 @@ export default function Statistics({
   numarZileActive,
   activitatePreferata,
   dateActivitatiPreferate,
+  dateIntensitate,
 }: StatisticsProps) {
  return (
   <>
@@ -144,6 +149,37 @@ export default function Statistics({
         </PieChart>
       </ResponsiveContainer>
     </Card>
+    <Card titlu="Distribuția pe intensități" darkMode={darkMode}>
+  <ResponsiveContainer width="100%" height={320}>
+    <PieChart>
+      <Pie
+        data={dateIntensitate}
+        dataKey="minute"
+        nameKey="nume"
+        cx="50%"
+        cy="50%"
+        outerRadius={120}
+        label
+      >
+        {dateIntensitate.map((_, index) => (
+          <Cell
+            key={`intensitate-${index}`}
+            fill={COLORS[index % COLORS.length]}
+          />
+        ))}
+      </Pie>
+
+      <Tooltip />
+
+      <Legend
+        wrapperStyle={{
+          color: darkMode ? "#e2e8f0" : "#334155",
+          fontWeight: 500,
+        }}
+      />
+    </PieChart>
+  </ResponsiveContainer>
+</Card>
   </>
 );
 }

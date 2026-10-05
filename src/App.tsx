@@ -517,6 +517,26 @@ const activitatePreferata =
   nume,
   minute,
 }));
+const dateIntensitate = [
+  {
+    nume: "Ușoară",
+    minute: activitati
+      .filter((activitate) => activitate.intensitate === "usoara")
+      .reduce((total, activitate) => total + activitate.durata, 0),
+  },
+  {
+    nume: "Moderată",
+    minute: activitati
+      .filter((activitate) => activitate.intensitate === "moderata")
+      .reduce((total, activitate) => total + activitate.durata, 0),
+  },
+  {
+    nume: "Intensă",
+    minute: activitati
+      .filter((activitate) => activitate.intensitate === "intensa")
+      .reduce((total, activitate) => total + activitate.durata, 0),
+  },
+];
       const activitatiPerioada = activitati.filter((activitate) => {
   if (filtruPerioada === "toate") {
     return true;
@@ -906,6 +926,7 @@ stergeActivitate={stergeActivitate}
     numarZileActive={numarZileActive}
     activitatePreferata={activitatePreferata}
     dateActivitatiPreferate={dateActivitatiPreferate}
+    dateIntensitate={dateIntensitate}
   />
 )}
   
