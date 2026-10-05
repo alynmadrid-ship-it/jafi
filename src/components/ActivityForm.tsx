@@ -1,7 +1,12 @@
 import { useState, type FormEvent } from "react";
 import { Plus, CalendarDays, Activity, Clock3 } from "lucide-react";
 type ActivityFormProps = {
-  onAdd: (nume: string, durata: number, data: string) => void;
+  onAdd: (
+  nume: string,
+  durata: number,
+  data: string,
+  intensitate: string
+) => void;
   darkMode: boolean;
 };
 
@@ -11,6 +16,7 @@ function ActivityForm({ onAdd, darkMode }: ActivityFormProps) {
   const [data, setData] = useState(
   new Date().toISOString().split("T")[0]
 );
+const [intensitate, setIntensitate] = useState("moderata");
 const [mesajSucces, setMesajSucces] = useState(false);
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -21,7 +27,7 @@ const [mesajSucces, setMesajSucces] = useState(false);
       return;
     }
 
-    onAdd(nume.trim(), minute, data);
+    onAdd(nume.trim(), minute, data, intensitate);
     setMesajSucces(true);
 setTimeout(() => {
   setMesajSucces(false);
@@ -203,7 +209,41 @@ onChange={(event) => setNume(event.target.value)}
 }}
         />
       </div>
+<div style={{ marginBottom: "15px" }}>
+  <label
+    htmlFor="intensitate"
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: "7px",
+      fontWeight: 600,
+    }}
+  >
+    Intensitate
+  </label>
 
+  <select
+    id="intensitate"
+    value={intensitate}
+    onChange={(event) => setIntensitate(event.target.value)}
+    style={{
+      width: "100%",
+      padding: "10px",
+      marginTop: "6px",
+      boxSizing: "border-box",
+      borderRadius: "8px",
+      border: darkMode
+        ? "1px solid #475569"
+        : "1px solid #cbd5e1",
+      background: darkMode ? "#0f172a" : "#ffffff",
+      color: darkMode ? "#e2e8f0" : "#0f172a",
+    }}
+  >
+    <option value="usoara">Ușoară</option>
+    <option value="moderata">Moderată</option>
+    <option value="intensa">Intensă</option>
+  </select>
+</div>
       <button
   type="submit"
   className="activity-add-button"

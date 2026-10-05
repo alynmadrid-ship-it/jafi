@@ -22,6 +22,7 @@ type Activitate = {
   nume: string;
   durata: number;
   data: string;
+  intensitate?: string;
 };
 type HomeProps = {
   numeUtilizator: string;
@@ -696,8 +697,31 @@ stergeActivitate,
               }}
             >
               <div>
-                <strong>{activitate.nume}</strong> — {activitate.durata} minute
-              </div>
+  <div>
+    <strong>{activitate.nume}</strong> — {activitate.durata} minute
+  </div>
+
+  {activitate.intensitate && (
+    <div
+      style={{
+        fontSize: "13px",
+        marginTop: "4px",
+        color: darkMode ? "#94a3b8" : "#64748b",
+      }}
+    >
+      Intensitate:{" "}
+      <strong>
+        {activitate.intensitate === "usoara"
+          ? "Ușoară"
+          : activitate.intensitate === "moderata"
+            ? "Moderată"
+            : activitate.intensitate === "intensa"
+              ? "Intensă"
+              : activitate.intensitate}
+      </strong>
+    </div>
+  )}
+</div>
 
               <div style={{ display: "flex", gap: "8px" }}>
                 <button

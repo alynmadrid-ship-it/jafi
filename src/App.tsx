@@ -10,6 +10,7 @@ type Activitate = {
   nume: string;
   durata: number;
   data: string;
+  intensitate?: string;
 };
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -56,11 +57,12 @@ useEffect(() => {
     console.log("ACTIVITATI DIN SUPABASE:", data, error);
  if (!error && data) {
   const activitatiConvertite: Activitate[] = data.map((activitate) => ({
-    id: activitate.id,
-    nume: activitate.tip_activitate,
-    durata: activitate.durata,
-    data: activitate.data,
-  }));
+  id: activitate.id,
+  nume: activitate.tip_activitate,
+  durata: activitate.durata,
+  data: activitate.data,
+  intensitate: activitate.intensitate,
+}));
 
   setActivitati(activitatiConvertite);
 }
@@ -214,29 +216,33 @@ const dateSortate = Object.keys(activitatiGrupate).sort((a, b) =>
  async function adaugaActivitate(
   nume: string,
   durata: number,
-  data: string
+  data: string,
+  intensitate: string
 ) {
-    const activitateNoua: Activitate = {
-  id: Date.now(),
-  nume,
-  durata,
-  data,
-};
-    
-    setActivitati((listaVeche) => [activitateNoua, ...listaVeche]);
- if (elevId) {
-  const { error } = await supabase
-    .from("activitati")
-    .insert({
-      elev_id: elevId,
-      tip_activitate: nume,
-      durata: durata,
-      data: data,
-    });
+  const activitateNoua: Activitate = {
+    id: Date.now(),
+    nume,
+    durata,
+    data,
+    intensitate,
+  };
 
-  console.log("SALVARE ACTIVITATE:", error);
-}
+  setActivitati((listaVeche) => [activitateNoua, ...listaVeche]);
+
+  if (elevId) {
+    const { error } = await supabase
+      .from("activitati")
+      .insert({
+        elev_id: elevId,
+        tip_activitate: nume,
+        durata: durata,
+        data: data,
+        intensitate: intensitate,
+      });
+
+    console.log("SALVARE ACTIVITATE:", error);
   }
+}
  async function stergeActivitate(id: number) {
   const confirmare = window.confirm(
     "Sigur dorești să ștergi această activitate?"
@@ -332,23 +338,24 @@ function exportaPDF() {
   );
 
   autoTable(documentPDF, {
-    startY: 40,
-    head: [["Activitate", "Durata", "Data"]],
-    body: activitatiFiltrate.map((activitate) => [
-      activitate.nume,
-      `${activitate.durata} minute`,
-      activitate.data,
-    ]),
-  });
+  startY: 40,
+  head: [["Activitate", "Durata", "Intensitate", "Data"]],
+  body: activitatiFiltrate.map((activitate) => [
+    activitate.nume,
+    `${activitate.durata} minute`,
+    activitate.intensitate === "usoara"
+      ? "Usoara"
+      : activitate.intensitate === "moderata"
+        ? "Moderata"
+        : activitate.intensitate === "intensa"
+          ? "Intensa"
+          : "-",
+    activitate.data,
+  ]),
+});
 
   documentPDF.save("jurnal-activitati.pdf");
 }
-useEffect(() => {
-  localStorage.setItem(
-    "activitati",
-    JSON.stringify(activitati)
-  );
-}, [activitati]);
 const astazi = new Date();
 
 const anulCurent = astazi.getFullYear();
